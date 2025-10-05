@@ -6,6 +6,7 @@ using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Application.Services;
 using Yanets.Application.Services.Vendors;
+using System.Linq;
 
 namespace Yanets.WebUI.Tests.Integration
 {
@@ -23,6 +24,14 @@ namespace Yanets.WebUI.Tests.Integration
                     new Application.Services.MibProvider());
                 services.AddSingleton<IPromptGenerator>(sp =>
                     new Application.Services.PromptGenerator());
+
+                // Remove the problematic IDeviceSimulator registration that requires NetworkDevice
+                var deviceSimulatorDescriptor = services.FirstOrDefault(s =>
+                    s.ServiceType == typeof(Application.Services.IDeviceSimulator));
+                if (deviceSimulatorDescriptor != null)
+                {
+                    services.Remove(deviceSimulatorDescriptor);
+                }
 
                 // Add test logger
                 services.AddLogging(logging =>
