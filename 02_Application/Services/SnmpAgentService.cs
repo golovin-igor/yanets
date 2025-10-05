@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Core.Snmp;
+using Yanets.Core.Vendors;
 
 namespace Yanets.Application.Services
 {
