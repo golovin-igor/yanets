@@ -95,7 +95,8 @@ namespace Yanets.WebUI.Tests.Integration
             // Verify all devices are present
             var devicesResponse = await _httpClient.GetAsync($"/api/topology/{topology!.Id}/devices");
             var retrievedDevices = await devicesResponse.Content.ReadFromJsonAsync<NetworkDevice[]>();
-            Assert.Equal(3, retrievedDevices!.Length);
+            Assert.NotNull(retrievedDevices);
+            Assert.Equal(3, retrievedDevices.Length);
 
             // Test connectivity for each device
             foreach (var device in retrievedDevices)
