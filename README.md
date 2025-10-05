@@ -1,10 +1,11 @@
-# YANETS - Yet Another NEtwork Topology Simulator
+# YANETS - Yet Another Network Equipment Test Simulator
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=flat&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/golovin-igor/yanets)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)](https://github.com/yourusername/yanets)
+[![Build Status](https://github.com/yourusername/yanets/actions/workflows/test.yaml/badge.svg)](https://github.com/yourusername/yanets/actions/workflows/test.yaml)
 
-A modern, cross-platform network topology simulator designed for network architects, engineers, students, and IT professionals. Built on the robust .NET platform, YANETS provides an intuitive environment for designing, visualizing, and analyzing complex network topologies.
+A comprehensive network device simulation system that provides realistic emulation of network equipment including CLI (Telnet/SSH) and SNMP communication with vendor-specific behaviors. Built using Clean Architecture principles, it supports multiple vendors including Cisco IOS and Juniper JunOS.
 
 ![YANETS Screenshot](docs/images/screenshot.png)
 
@@ -14,14 +15,14 @@ YANETS focuses on the structural aspects of networking - helping you design and 
 
 ## ✨ Key Features
 
-- **🎨 Visual Topology Designer**: Drag-and-drop interface for creating network diagrams with industry-standard device representations
-- **🔧 Multi-Vendor Support**: Define and simulate topologies with devices from Cisco, Juniper, Arista, HP, Dell, and custom vendors
-- **✅ Topology Validation**: Automated checks for common design issues, redundancy paths, and best practices
-- **📚 Device Library**: Extensive catalog of routers, switches, firewalls, load balancers, servers, and network appliances
-- **📄 Export & Documentation**: Generate professional network diagrams, topology reports, and technical documentation
-- **🏗️ Hierarchical Design**: Support for campus, data center, WAN, and cloud network architectures
+- **🌐 Realistic Network Device Simulation**: Full CLI (Telnet/SSH) and SNMP emulation with authentic vendor behaviors
+- **🔧 Multi-Vendor Support**: Cisco IOS, Juniper JunOS, and extensible architecture for additional vendors
+- **✅ Stateful Device Simulation**: Maintains configuration, routing tables, interface states, and operational metrics
+- **📡 Protocol Compliance**: SNMP v1/v2c with standard MIB-II support plus vendor-specific extensions
+- **🖥️ Web-Based Management**: RESTful API with Swagger documentation for topology and device management
+- **🏗️ Clean Architecture**: Proper separation of concerns across Domain, Application, Infrastructure, and Presentation layers
 - **💻 Cross-Platform**: Runs on Windows, Linux, and macOS thanks to .NET's cross-platform capabilities
-- **🔌 Extensible**: Plugin architecture for custom device types and validation rules
+- **🔌 Extensible**: Plugin architecture for adding new vendors, commands, and protocols
 
 ## 🚀 Getting Started
 
@@ -33,12 +34,12 @@ YANETS focuses on the structural aspects of networking - helping you design and 
 ### Installation
 
 #### Option 1: Download Release
-Download the latest release from the [Releases](https://github.com/golovin-igor/yanets/releases) page.
+Download the latest release from the [Releases](https://github.com/yourusername/yanets/releases) page.
 
 #### Option 2: Build from Source
 ```bash
 # Clone the repository
-git clone https://github.com/golovin-igor/yanets.git
+git clone https://github.com/yourusername/yanets.git
 cd yanets
 
 # Restore dependencies
@@ -47,19 +48,43 @@ dotnet restore
 # Build the project
 dotnet build
 
-# Run the application
-dotnet run --project src/Yanets.UI
+# Run tests
+dotnet test
+
+# Start the Web API
+cd 04_Presentation/WebUI
+dotnet run
 ```
 
 ### Quick Start
 
-1. Launch YANETS
-2. Create a new topology project
-3. Drag devices from the toolbox onto the canvas
-4. Connect devices by clicking and dragging between ports
-5. Configure device properties in the properties panel
-6. Validate your topology using the built-in validator
-7. Export your design to PNG, SVG, or PDF
+1. **Start the Web API:**
+   ```bash
+   cd 04_Presentation/WebUI
+   dotnet run
+   ```
+
+2. **Access the API:**
+   - API: `http://localhost:5000`
+   - Swagger UI: `http://localhost:5000/swagger`
+   - Health Check: `http://localhost:5000/health`
+
+3. **Create a topology:**
+   ```bash
+   curl -X POST http://localhost:5000/api/topology \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Lab Network", "description": "Test laboratory network"}'
+   ```
+
+4. **Connect via Telnet:**
+   ```bash
+   telnet localhost 23001
+   ```
+
+5. **Query via SNMP:**
+   ```bash
+   snmpget -v 2c -c public localhost:16101 1.3.6.1.2.1.1.1.0
+   ```
 
 ## 📖 Documentation
 
