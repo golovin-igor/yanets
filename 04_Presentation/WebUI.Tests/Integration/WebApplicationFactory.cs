@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Application.Services;
@@ -17,12 +20,12 @@ namespace Yanets.WebUI.Tests.Integration
             builder.ConfigureServices(services =>
             {
                 // Replace real services with test implementations
-                services.AddSingleton<ITopologyService, TestTopologyService>();
-                services.AddSingleton<ICommandParser>(sp =>
+                services.AddScoped<ITopologyService, TestTopologyService>();
+                services.AddScoped<ICommandParser>(sp =>
                     new Application.Services.CommandParser());
-                services.AddSingleton<IMibProvider>(sp =>
+                services.AddScoped<IMibProvider>(sp =>
                     new Application.Services.MibProvider());
-                services.AddSingleton<IPromptGenerator>(sp =>
+                services.AddScoped<IPromptGenerator>(sp =>
                     new Application.Services.PromptGenerator());
 
                 // Remove the problematic IDeviceSimulator registration that requires NetworkDevice
@@ -40,7 +43,37 @@ namespace Yanets.WebUI.Tests.Integration
                     logging.AddConsole();
                     logging.AddDebug();
                 });
+
+                // Configure JSON serialization to handle Func delegates
+                services.Configure<JsonOptions>(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new FuncConverter());
+                });
             });
+        }
+    }
+
+    /// <summary>
+    /// Custom JSON converter to handle Func delegates during serialization
+    /// </summary>
+    public class FuncConverter : JsonConverter<object>
+    {
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeof(Delegate).IsAssignableFrom(typeToConvert);
+        }
+
+        public override object Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            // For deserialization, we'll skip Func delegates
+            reader.Skip();
+            return null!;
+        }
+
+        public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
+        {
+            // For serialization, we'll write a placeholder or skip
+            writer.WriteStringValue("[Delegate]");
         }
     }
 
@@ -49,7 +82,12 @@ namespace Yanets.WebUI.Tests.Integration
     /// </summary>
     public class TestTopologyService : ITopologyService
     {
-        private readonly List<NetworkTopology> _topologies = new();
+        private readonly List<NetworkTopology> _topologies;
+
+        public TestTopologyService()
+        {
+            _topologies = new List<NetworkTopology>();
+        }
 
         public NetworkTopology? GetTopology(Guid id)
         {
