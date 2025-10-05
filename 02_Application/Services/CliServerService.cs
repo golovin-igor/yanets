@@ -161,46 +161,73 @@ namespace Yanets.Application.Services
                 session.IsAuthenticated = true;
                 session.PrivilegeLevel = 1;
 
-                // Main command loop
+                // Main command loop with timeout protection
+                var lastActivity = DateTime.Now;
                 while (client.Connected && _isRunning)
                 {
                     try
                     {
+                        // Check for session timeout (30 minutes)
+                        if ((DateTime.Now - lastActivity).TotalMinutes > 30)
+                        {
+                            await writer.WriteLineAsync("Session timed out");
+                            break;
+                        }
+
                         // Display prompt
                         var prompt = GeneratePrompt(device, session);
                         await writer.WriteAsync(prompt);
 
-                        // Read command
-                        var commandLine = await reader.ReadLineAsync();
+                        // Read command with timeout
+                        var commandTask = reader.ReadLineAsync();
+                        var timeoutTask = Task.Delay(30000); // 30 second timeout
+                        var completedTask = await Task.WhenAny(commandTask, timeoutTask);
+
+                        if (completedTask == timeoutTask)
+                        {
+                            await writer.WriteLineAsync("Command timeout");
+                            break;
+                        }
+
+                        var commandLine = await commandTask;
                         if (string.IsNullOrWhiteSpace(commandLine))
                             continue;
 
+                        lastActivity = DateTime.Now;
                         session.UpdateActivity();
 
                         // Handle special commands
                         if (await HandleSpecialCommands(commandLine, session, writer))
                             continue;
 
-                        // Execute command
-                        var context = new Core.Commands.CommandContext
+                        // Execute command with error handling
+                        try
                         {
-                            Device = device,
-                            State = device.State,
-                            RawCommand = commandLine,
-                            Session = session,
-                            CurrentPrivilegeLevel = session.PrivilegeLevel
-                        };
+                            var context = new Core.Commands.CommandContext
+                            {
+                                Device = device,
+                                State = device.State,
+                                RawCommand = commandLine,
+                                Session = session,
+                                CurrentPrivilegeLevel = session.PrivilegeLevel
+                            };
 
-                        var result = await simulator.ExecuteCommand(context);
+                            var result = await simulator.ExecuteCommand(context);
 
-                        if (!string.IsNullOrEmpty(result.Output))
-                        {
-                            await writer.WriteAsync(result.Output);
+                            if (!string.IsNullOrEmpty(result.Output))
+                            {
+                                await writer.WriteAsync(result.Output);
+                            }
+
+                            if (!string.IsNullOrEmpty(result.ErrorMessage))
+                            {
+                                await writer.WriteLineAsync(result.ErrorMessage);
+                            }
                         }
-
-                        if (!string.IsNullOrEmpty(result.ErrorMessage))
+                        catch (Exception ex)
                         {
-                            await writer.WriteLineAsync(result.ErrorMessage);
+                            _logger.LogError(ex, "Error executing command '{Command}' for device {DeviceId}", commandLine, device.Id);
+                            await writer.WriteLineAsync("% Command execution failed");
                         }
                     }
                     catch (IOException)
