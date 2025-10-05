@@ -186,13 +186,13 @@ namespace Yanets.Application.Services
             }
         }
 
-        private VendorProfile CreateDefaultVendorProfile(DeviceType deviceType)
+        private VendorProfile CreateDefaultVendorProfile(SharedKernel.DeviceType deviceType)
         {
             return deviceType switch
             {
-                DeviceType.Router => new CiscoIosVendorProfile(),
-                DeviceType.Switch => new CiscoIosVendorProfile(),
-                _ => new CiscoIosVendorProfile()
+                SharedKernel.DeviceType.Router => new Application.Services.Vendors.CiscoIosVendorProfile(),
+                SharedKernel.DeviceType.Switch => new Application.Services.Vendors.CiscoIosVendorProfile(),
+                _ => new Application.Services.Vendors.CiscoIosVendorProfile()
             };
         }
 

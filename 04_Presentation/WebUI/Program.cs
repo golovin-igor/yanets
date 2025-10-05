@@ -21,11 +21,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Register YANETS services
-builder.Services.AddSingleton<ITopologyService, Application.Services.TopologyService>();
-builder.Services.AddSingleton<IDeviceSimulator, Application.Services.DeviceSimulatorService>();
-builder.Services.AddSingleton<ICommandParser, Application.Services.CommandParser>();
-builder.Services.AddSingleton<IMibProvider, Application.Services.MibProvider>();
-builder.Services.AddSingleton<IPromptGenerator, Application.Services.PromptGenerator>();
+builder.Services.AddSingleton<Yanets.Application.Services.ITopologyService, Yanets.Application.Services.TopologyService>();
+builder.Services.AddSingleton<Yanets.Application.Services.IDeviceSimulator, Yanets.Application.Services.DeviceSimulatorService>();
+builder.Services.AddSingleton<Yanets.Core.Interfaces.ICommandParser, Yanets.Application.Services.CommandParser>();
+builder.Services.AddSingleton<Yanets.Core.Interfaces.IMibProvider, Yanets.Application.Services.MibProvider>();
+builder.Services.AddSingleton<Yanets.Core.Interfaces.IPromptGenerator, Yanets.Application.Services.PromptGenerator>();
 
 // Register infrastructure services
 builder.Services.AddSingleton<CliServerService>();

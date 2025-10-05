@@ -15,9 +15,9 @@ namespace Yanets.WebUI.Controllers
     [Route("api/[controller]")]
     public class TopologyController : ControllerBase
     {
-        private readonly ITopologyService _topologyService;
+        private readonly Yanets.Application.Services.ITopologyService _topologyService;
 
-        public TopologyController(ITopologyService topologyService)
+        public TopologyController(Yanets.Application.Services.ITopologyService topologyService)
         {
             _topologyService = topologyService;
         }

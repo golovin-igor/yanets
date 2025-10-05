@@ -63,7 +63,7 @@ namespace Yanets.Application.Services
 
             if (_currentState.Resources == null)
             {
-                _currentState.Resources = new SystemResources
+                _currentState.Resources = new SharedKernel.SystemResources
                 {
                     CpuUtilization = 5,
                     MemoryTotal = 65536,
@@ -138,7 +138,7 @@ namespace Yanets.Application.Services
                 throw new ArgumentNullException(nameof(request));
 
             if (!_isRunning)
-                return new SnmpResponse { RequestId = request.RequestId, ErrorStatus = SnmpError.GenErr };
+                return new SnmpResponse { RequestId = request.RequestId, ErrorStatus = SharedKernel.SnmpError.GenErr };
 
             try
             {
@@ -153,7 +153,7 @@ namespace Yanets.Application.Services
                         response.VarBinds.Add(new SnmpVarBind
                         {
                             Oid = oid,
-                            Error = SnmpError.NoSuchName
+                            Error = SharedKernel.SnmpError.NoSuchName
                         });
                         continue;
                     }
@@ -172,7 +172,7 @@ namespace Yanets.Application.Services
                         response.VarBinds.Add(new SnmpVarBind
                         {
                             Oid = oid,
-                            Error = SnmpError.GenErr
+                            Error = SharedKernel.SnmpError.GenErr
                         });
                     }
                 }
@@ -184,7 +184,7 @@ namespace Yanets.Application.Services
                 return new SnmpResponse
                 {
                     RequestId = request.RequestId,
-                    ErrorStatus = SnmpError.GenErr
+                    ErrorStatus = SharedKernel.SnmpError.GenErr
                 };
             }
         }

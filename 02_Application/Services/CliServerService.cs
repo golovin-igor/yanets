@@ -182,7 +182,7 @@ namespace Yanets.Application.Services
                             continue;
 
                         // Execute command
-                        var context = new CommandContext
+                        var context = new Core.Commands.CommandContext
                         {
                             Device = device,
                             State = device.State,

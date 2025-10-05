@@ -55,8 +55,8 @@ namespace Yanets.Application.Services
             {
                 Oid = "1.3.6.1.2.1.1.1.0",
                 Name = "sysDescr",
-                DataType = SnmpDataType.OctetString,
-                Access = AccessMode.ReadOnly,
+                DataType = SharedKernel.SnmpDataType.OctetString,
+                Access = SharedKernel.AccessMode.ReadOnly,
                 Description = "System description"
             };
 
@@ -64,8 +64,8 @@ namespace Yanets.Application.Services
             {
                 Oid = "1.3.6.1.2.1.1.2.0",
                 Name = "sysObjectID",
-                DataType = SnmpDataType.ObjectIdentifier,
-                Access = AccessMode.ReadOnly,
+                DataType = SharedKernel.SnmpDataType.ObjectIdentifier,
+                Access = SharedKernel.AccessMode.ReadOnly,
                 Description = "System object identifier"
             };
 
@@ -73,8 +73,8 @@ namespace Yanets.Application.Services
             {
                 Oid = "1.3.6.1.2.1.1.3.0",
                 Name = "sysUpTime",
-                DataType = SnmpDataType.TimeTicks,
-                Access = AccessMode.ReadOnly,
+                DataType = SharedKernel.SnmpDataType.TimeTicks,
+                Access = SharedKernel.AccessMode.ReadOnly,
                 Description = "System uptime"
             };
 
@@ -82,8 +82,8 @@ namespace Yanets.Application.Services
             {
                 Oid = "1.3.6.1.2.1.1.5.0",
                 Name = "sysName",
-                DataType = SnmpDataType.OctetString,
-                Access = AccessMode.ReadWrite,
+                DataType = SharedKernel.SnmpDataType.OctetString,
+                Access = SharedKernel.AccessMode.ReadWrite,
                 Description = "System name"
             };
 
@@ -92,8 +92,8 @@ namespace Yanets.Application.Services
             {
                 Oid = "1.3.6.1.2.1.2.1.0",
                 Name = "ifNumber",
-                DataType = SnmpDataType.Integer,
-                Access = AccessMode.ReadOnly,
+                DataType = SharedKernel.SnmpDataType.Integer,
+                Access = SharedKernel.AccessMode.ReadOnly,
                 Description = "Number of interfaces"
             };
         }
@@ -105,8 +105,8 @@ namespace Yanets.Application.Services
             {
                 Oid = "1.3.6.1.4.1.9.2.1.1.0",
                 Name = "ciscoSystemVersion",
-                DataType = SnmpDataType.OctetString,
-                Access = AccessMode.ReadOnly,
+                DataType = SharedKernel.SnmpDataType.OctetString,
+                Access = SharedKernel.AccessMode.ReadOnly,
                 Description = "Cisco system version"
             };
 
@@ -115,8 +115,8 @@ namespace Yanets.Application.Services
             {
                 Oid = "1.3.6.1.4.1.2636.3.1.1.0",
                 Name = "jnxOperatingState",
-                DataType = SnmpDataType.Integer,
-                Access = AccessMode.ReadOnly,
+                DataType = SharedKernel.SnmpDataType.Integer,
+                Access = SharedKernel.AccessMode.ReadOnly,
                 Description = "Juniper operating state"
             };
         }

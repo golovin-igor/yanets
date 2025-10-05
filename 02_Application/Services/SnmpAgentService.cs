@@ -1,11 +1,13 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Core.Snmp;
 using Yanets.Core.Vendors;
+using Yanets.SharedKernel;
 
 namespace Yanets.Application.Services
 {
@@ -165,14 +167,14 @@ namespace Yanets.Application.Services
             var request = new SnmpRequest
             {
                 RequestId = BitConverter.ToInt32(buffer, 4),
-                Type = (SnmpRequestType)buffer[2],
-                Community = Encoding.ASCII.GetString(buffer, 8, buffer.Length - 8).Trim('\0'),
-                Version = (SnmpVersion)buffer[3],
+                Type = (SharedKernel.SnmpRequestType)buffer[2],
+                Community = System.Text.Encoding.ASCII.GetString(buffer, 8, buffer.Length - 8).Trim('\0'),
+                Version = (SharedKernel.SnmpVersion)buffer[3],
                 Oids = new List<string>()
             };
 
             // Extract OIDs from request (simplified)
-            if (request.Type == SnmpRequestType.Get || request.Type == SnmpRequestType.GetNext)
+            if (request.Type == SharedKernel.SnmpRequestType.Get || request.Type == SharedKernel.SnmpRequestType.GetNext)
             {
                 // Parse OID list from buffer
                 request.Oids.Add("1.3.6.1.2.1.1.1.0"); // sysDescr as example
@@ -191,11 +193,11 @@ namespace Yanets.Application.Services
             // SNMP message header (simplified)
             buffer.AddRange(new byte[] { 0x30, 0x00 }); // Sequence
             buffer.AddRange(BitConverter.GetBytes(response.RequestId));
-            buffer.Add((byte)SnmpRequestType.Response);
-            buffer.Add((byte)SnmpVersion.V2c);
+            buffer.Add((byte)SharedKernel.SnmpRequestType.Response);
+            buffer.Add((byte)SharedKernel.SnmpVersion.V2c);
 
             // Community string
-            var communityBytes = Encoding.ASCII.GetBytes("public");
+            var communityBytes = System.Text.Encoding.ASCII.GetBytes("public");
             buffer.AddRange(communityBytes);
 
             // Response PDU (simplified)
