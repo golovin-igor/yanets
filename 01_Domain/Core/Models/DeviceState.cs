@@ -17,6 +17,7 @@ namespace Yanets.Core.Models
         public DateTime Uptime { get; set; } = DateTime.Now;
         public SystemResources Resources { get; set; } = new();
         public bool IsSimulationRunning { get; set; }
+        public Dictionary<string, bool> InterfaceConnectivity { get; set; } = new();
 
         /// <summary>
         /// Gets the uptime as a TimeSpan
@@ -224,7 +225,8 @@ namespace Yanets.Core.Models
                     MemoryTotal = Resources.MemoryTotal,
                     MemoryUsed = Resources.MemoryUsed
                 },
-                IsSimulationRunning = IsSimulationRunning
+                IsSimulationRunning = IsSimulationRunning,
+                InterfaceConnectivity = new Dictionary<string, bool>(InterfaceConnectivity)
             };
         }
 
@@ -240,7 +242,42 @@ namespace Yanets.Core.Models
                    RoutingTable != null &&
                    ArpTable != null &&
                    MacTable != null &&
-                   Vlans != null;
+                   Vlans != null &&
+                   InterfaceConnectivity != null;
+        }
+
+        /// <summary>
+        /// Updates interface connectivity status and recalculates routes
+        /// </summary>
+        public void UpdateInterfaceConnectivity(string interfaceName, bool isConnected)
+        {
+            InterfaceConnectivity[interfaceName] = isConnected;
+            RecalculateRoutes();
+        }
+
+        /// <summary>
+        /// Checks if an interface is reachable for connectivity
+        /// </summary>
+        public bool IsInterfaceReachable(string interfaceName)
+        {
+            return InterfaceConnectivity.TryGetValue(interfaceName, out var isConnected) && isConnected;
+        }
+
+        /// <summary>
+        /// Recalculates routing table based on current interface connectivity
+        /// </summary>
+        private void RecalculateRoutes()
+        {
+            // Remove routes that depend on unreachable interfaces
+            var routesToRemove = RoutingTable.Where(route =>
+                !string.IsNullOrEmpty(route.Interface) &&
+                InterfaceConnectivity.TryGetValue(route.Interface, out var isConnected) &&
+                !isConnected).ToList();
+
+            foreach (var route in routesToRemove)
+            {
+                RoutingTable.Remove(route);
+            }
         }
 
         /// <summary>
@@ -255,6 +292,7 @@ namespace Yanets.Core.Models
             ArpTable.Clear();
             MacTable.Clear();
             Vlans.Clear();
+            InterfaceConnectivity.Clear();
             Uptime = DateTime.Now;
             Resources = new SystemResources();
             IsSimulationRunning = false;

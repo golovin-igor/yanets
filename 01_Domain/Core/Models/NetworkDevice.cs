@@ -38,6 +38,7 @@ namespace Yanets.Core.Models
         {
             Type = deviceType;
             InitializeDefaultInterfaces();
+            InitializeInterfaceConnectivity();
         }
 
         /// <summary>
@@ -59,6 +60,17 @@ namespace Yanets.Core.Models
                 default:
                     AddDefaultEthernetInterfaces();
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Initializes interface connectivity tracking for all interfaces
+        /// </summary>
+        private void InitializeInterfaceConnectivity()
+        {
+            foreach (var iface in Interfaces.Where(i => i.IsUp))
+            {
+                State.InterfaceConnectivity[iface.Name] = true;
             }
         }
 
@@ -236,6 +248,17 @@ namespace Yanets.Core.Models
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Initializes interface connectivity tracking for all interfaces
+        /// </summary>
+        private void InitializeInterfaceConnectivity()
+        {
+            foreach (var iface in Interfaces.Where(i => i.IsUp))
+            {
+                State.InterfaceConnectivity[iface.Name] = true;
+            }
         }
 
         /// <summary>

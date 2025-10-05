@@ -59,6 +59,62 @@ namespace Yanets.Application.Services.Vendors
                         new CommandParameter { Name = "interface", IsRequired = true },
                         new CommandParameter { Name = "property", IsRequired = true }
                     }
+                },
+                ["set protocols bgp"] = new CommandDefinition
+                {
+                    Syntax = "set protocols bgp <as-number>",
+                    PrivilegeLevel = 15,
+                    Handler = SetProtocolsBgpHandler,
+                    Parameters = new List<CommandParameter>
+                    {
+                        new CommandParameter { Name = "as-number", IsRequired = true }
+                    }
+                },
+                ["set protocols ospf area"] = new CommandDefinition
+                {
+                    Syntax = "set protocols ospf area <area-id> interface <interface>",
+                    PrivilegeLevel = 15,
+                    Handler = SetProtocolsOspfAreaHandler,
+                    Parameters = new List<CommandParameter>
+                    {
+                        new CommandParameter { Name = "area-id", IsRequired = true },
+                        new CommandParameter { Name = "interface", IsRequired = true }
+                    }
+                },
+                ["show bgp summary"] = new CommandDefinition
+                {
+                    Syntax = "show bgp summary",
+                    PrivilegeLevel = 1,
+                    Handler = ShowBgpSummaryHandler
+                },
+                ["show ospf neighbor"] = new CommandDefinition
+                {
+                    Syntax = "show ospf neighbor",
+                    PrivilegeLevel = 1,
+                    Handler = ShowOspfNeighborHandler
+                },
+                ["show route protocol bgp"] = new CommandDefinition
+                {
+                    Syntax = "show route protocol bgp",
+                    PrivilegeLevel = 1,
+                    Handler = ShowRouteProtocolBgpHandler
+                },
+                ["set routing-options static route"] = new CommandDefinition
+                {
+                    Syntax = "set routing-options static route <network> next-hop <next-hop>",
+                    PrivilegeLevel = 15,
+                    Handler = SetStaticRouteHandler,
+                    Parameters = new List<CommandParameter>
+                    {
+                        new CommandParameter { Name = "network", IsRequired = true },
+                        new CommandParameter { Name = "next-hop", IsRequired = true }
+                    }
+                },
+                ["show route"] = new CommandDefinition
+                {
+                    Syntax = "show route",
+                    PrivilegeLevel = 1,
+                    Handler = ShowRouteHandler
                 }
             };
 
@@ -163,6 +219,28 @@ login:
             };
         }
 
+        private static CommandResult SetProtocolsBgpHandler(CommandContext ctx)
+        {
+            var asNumber = ctx.ParsedArguments.GetValueOrDefault("as-number");
+            if (string.IsNullOrEmpty(asNumber))
+            {
+                return CommandResult.CreateError("syntax error");
+            }
+
+            // Enter BGP configuration mode
+            ctx.Session.CurrentMode = CliMode.RouterConfig;
+            ctx.Session.SessionVariables["bgp_as"] = asNumber;
+            ctx.Session.SessionVariables["routing_protocol"] = "bgp";
+
+            var newState = ctx.State.Clone();
+            return new CommandResult
+            {
+                Success = true,
+                Output = string.Empty,
+                UpdatedState = newState
+            };
+        }
+
         private static string GenerateDefaultConfig(NetworkDevice device)
         {
             return $"## Last commit: {DateTime.Now}\n" +
@@ -188,6 +266,25 @@ login:
                    $"        }}\n" +
                    $"    }}\n" +
                    $"}}\n";
+        }
+
+        private static CommandResult SetProtocolsOspfAreaHandler(CommandContext ctx)
+        {
+            var areaId = ctx.ParsedArguments.GetValueOrDefault("area-id");
+            var interface = ctx.ParsedArguments.GetValueOrDefault("interface");
+
+            if (string.IsNullOrEmpty(areaId) || string.IsNullOrEmpty(interface))
+            {
+                return CommandResult.CreateError("syntax error");
+            }
+
+            var newState = ctx.State.Clone();
+            return new CommandResult
+            {
+                Success = true,
+                Output = string.Empty,
+                UpdatedState = newState
+            };
         }
     }
 }
