@@ -51,7 +51,8 @@ namespace Yanets.WebUI.Tests.Integration
             var devicesResponse = await _httpClient.GetAsync($"/api/topology/{topology.Id}/devices");
             devicesResponse.EnsureSuccessStatusCode();
             var devices = await devicesResponse.Content.ReadFromJsonAsync<NetworkDevice[]>();
-            Assert.Single(devices!);
+            Assert.NotNull(devices);
+            Assert.Single(devices);
             Assert.Equal("E2E Router", devices[0].Name);
             Assert.Equal("e2e-router", devices[0].Hostname);
 
