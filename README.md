@@ -99,22 +99,32 @@ dotnet run
 YANETS follows Clean Architecture principles with clear separation of concerns:
 
 ```
-src/
-├── Yanets.Core/              # Domain models and business logic
-├── Yanets.Application/       # Use cases and application services
-├── Yanets.Infrastructure/    # External services, file I/O, persistence
-├── Yanets.UI/               # User interface (WPF/Avalonia/MAUI/Blazor)
-└── Yanets.Plugins/          # Plugin system and extensibility
+yanets/
+├── 00_SharedKernel/           # Common types and utilities
+├── 01_Domain/                # Business logic and domain models
+│   ├── Core/                 # Core domain models and interfaces
+│   └── Tests/                # Unit tests
+├── 02_Application/           # Application services and orchestration
+│   └── Services/             # Business logic services
+├── 03_Infrastructure/        # External concerns and implementations
+│   ├── Network/              # Network socket management
+│   └── CommandHandlers/      # Vendor-specific command handlers
+├── 04_Presentation/          # User interface layer
+│   ├── WebUI/                # ASP.NET Core Web API
+│   └── WebUI.Tests/          # Integration tests
+├── docs/                     # Documentation
+└── .github/                  # CI/CD workflows
 ```
 
 ### Technology Stack
 
 - **.NET 9**: Core framework with latest performance improvements
 - **C# 13**: Programming language with modern features
-- **[UI Framework]**: Cross-platform UI (Avalonia/MAUI/Blazor/WPF)
-- **Graph Theory Libraries**: Topology analysis and path computation
-- **JSON/YAML**: Topology file formats
-- **xUnit**: Testing framework
+- **ASP.NET Core**: Web API framework with RESTful endpoints
+- **xUnit**: Testing framework with comprehensive test coverage
+- **Swagger/OpenAPI**: Interactive API documentation
+- **TCP/UDP Sockets**: Network protocol implementation
+- **JSON**: Data serialization and API communication
 
 ## 🎓 Who is YANETS For?
 
