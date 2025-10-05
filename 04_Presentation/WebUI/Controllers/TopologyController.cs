@@ -53,6 +53,17 @@ namespace Yanets.WebUI.Controllers
         [HttpPost]
         public ActionResult<NetworkTopology> CreateTopology([FromBody] CreateTopologyRequest request)
         {
+            // Validate the request
+            var validationContext = new ValidationContext(request);
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(request, validationContext, validationResults, true))
+            {
+                return BadRequest(new
+                {
+                    errors = validationResults.Select(v => new { field = v.MemberNames.FirstOrDefault(), message = v.ErrorMessage })
+                });
+            }
+
             var topology = new NetworkTopology
             {
                 Name = request.Name,
