@@ -2,6 +2,8 @@ using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Core.Snmp;
 using Yanets.Core.Vendors;
+using Yanets.SharedKernel;
+using System.Linq;
 
 namespace Yanets.Application.Services
 {
@@ -33,10 +35,10 @@ namespace Yanets.Application.Services
             // For demo purposes, return basic handlers
             return oid switch
             {
-                "1.3.6.1.2.1.1.1.0" => OidHandler.ReadOnly(oid, SysDescrHandler),
-                "1.3.6.1.2.1.1.3.0" => OidHandler.ReadOnly(oid, SysUptimeHandler),
-                "1.3.6.1.2.1.1.5.0" => OidHandler.ReadOnly(oid, SysNameHandler),
-                "1.3.6.1.2.1.2.2.1.2" => OidHandler.Table("1.3.6.1.2.1.2.2.1.2", IfDescrHandler, GetInterfaceIndices),
+                "1.3.6.1.2.1.1.1.0" => OidHandler.ReadOnly(oid, state => SysDescrHandler(state)),
+                "1.3.6.1.2.1.1.3.0" => OidHandler.ReadOnly(oid, state => SysUptimeHandler(state)),
+                "1.3.6.1.2.1.1.5.0" => OidHandler.ReadOnly(oid, state => SysNameHandler(state)),
+                "1.3.6.1.2.1.2.2.1.2" => OidHandler.Table("1.3.6.1.2.1.2.2.1.2", state => IfDescrHandler(state, "1"), state => GetInterfaceIndices(state)),
                 _ => null
             };
         }
