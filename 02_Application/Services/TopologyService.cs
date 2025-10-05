@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Logging;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Core.Vendors;
+using Yanets.SharedKernel;
 
 namespace Yanets.Application.Services
 {

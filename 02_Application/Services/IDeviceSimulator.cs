@@ -1,6 +1,7 @@
 using Yanets.Core.Commands;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
+using Yanets.Core.Snmp;
 
 namespace Yanets.Application.Services
 {
