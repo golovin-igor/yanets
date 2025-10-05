@@ -2,6 +2,7 @@ using Yanets.Core.Commands;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Core.Snmp;
+using Yanets.SharedKernel;
 
 namespace Yanets.Application.Services
 {
