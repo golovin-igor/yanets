@@ -120,7 +120,8 @@ namespace Yanets.WebUI.Tests.Integration
             // Verify all devices were created
             var devicesResponse = await _client.GetAsync($"/api/topology/{topology!.Id}/devices");
             var devices = await devicesResponse.Content.ReadFromJsonAsync<NetworkDevice[]>();
-            Assert.Equal(20, devices!.Length);
+            Assert.NotNull(devices);
+            Assert.Equal(20, devices.Length);
 
             // Cleanup
             await _client.DeleteAsync($"/api/topology/{topology.Id}");

@@ -52,7 +52,7 @@ namespace Yanets.WebUI
 
             // Register YANETS services
             services.AddSingleton<Yanets.Application.Services.ITopologyService, Yanets.Application.Services.TopologyService>();
-            services.AddSingleton<Yanets.Application.Services.IDeviceSimulator, Yanets.Application.Services.DeviceSimulatorService>();
+            services.AddTransient<Yanets.Application.Services.IDeviceSimulator, Yanets.Application.Services.DeviceSimulatorService>();
             services.AddSingleton<Yanets.Core.Interfaces.ICommandParser, Yanets.Application.Services.CommandParser>();
             services.AddSingleton<Yanets.Core.Interfaces.IMibProvider, Yanets.Application.Services.MibProvider>();
             services.AddSingleton<Yanets.Core.Interfaces.IPromptGenerator, Yanets.Application.Services.PromptGenerator>();
@@ -75,9 +75,9 @@ namespace Yanets.WebUI
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthorization();
 
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
