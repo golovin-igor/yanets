@@ -128,11 +128,12 @@ yanets/
 
 ## 🎓 Who is YANETS For?
 
-- **Network Architects**: Design and validate network architectures before implementation
-- **IT Students**: Learn network topology concepts and prepare for certifications (CCNA, CCNP, etc.)
-- **System Administrators**: Document existing networks and plan infrastructure changes
-- **Technical Leads**: Communicate network designs to stakeholders with clear visualizations
-- **Consultants**: Rapidly prototype network solutions for client proposals
+- **Network Engineers**: Test and validate network configurations before deployment
+- **IT Students**: Learn CLI and SNMP operations with realistic device simulation
+- **DevOps Teams**: Test automation scripts and monitoring tools against simulated devices
+- **Training Organizations**: Provide hands-on network device experience without physical hardware
+- **Protocol Developers**: Test network protocols and applications against realistic device behaviors
+- **Security Teams**: Test security tools and configurations against simulated network infrastructure
 
 ## 🗺️ Roadmap
 
