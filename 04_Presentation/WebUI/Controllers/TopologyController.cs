@@ -3,6 +3,8 @@ using System.Drawing;
 using Yanets.Core.Models;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Vendors;
+using Yanets.Application.Services;
+using Yanets.Application.Services.Vendors;
 using Yanets.WebUI.Services;
 using Yanets.WebUI.Vendors;
 using Yanets.SharedKernel;
@@ -133,9 +135,9 @@ namespace Yanets.WebUI.Controllers
         {
             return vendorName.ToLower() switch
             {
-                "cisco" => new CiscoIosVendorProfile(),
-                "juniper" => new JuniperJunosVendorProfile(),
-                _ => new CiscoIosVendorProfile() // Default to Cisco
+                "cisco" => new Application.Services.Vendors.CiscoIosVendorProfile(),
+                "juniper" => new Application.Services.Vendors.JuniperJunosVendorProfile(),
+                _ => new Application.Services.Vendors.CiscoIosVendorProfile() // Default to Cisco
             };
         }
     }

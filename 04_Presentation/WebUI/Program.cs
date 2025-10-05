@@ -1,6 +1,7 @@
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Core.Vendors;
+using Yanets.Application.Services;
 using Yanets.WebUI.Services;
 using Yanets.SharedKernel;
 
@@ -20,11 +21,15 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Register YANETS services
-builder.Services.AddSingleton<ITopologyService, TopologyService>();
-builder.Services.AddSingleton<IDeviceSimulator, DeviceSimulatorService>();
-builder.Services.AddSingleton<ICommandParser, CommandParser>();
-builder.Services.AddSingleton<IMibProvider, MibProvider>();
-builder.Services.AddSingleton<IPromptGenerator, PromptGenerator>();
+builder.Services.AddSingleton<ITopologyService, Application.Services.TopologyService>();
+builder.Services.AddSingleton<IDeviceSimulator, Application.Services.DeviceSimulatorService>();
+builder.Services.AddSingleton<ICommandParser, Application.Services.CommandParser>();
+builder.Services.AddSingleton<IMibProvider, Application.Services.MibProvider>();
+builder.Services.AddSingleton<IPromptGenerator, Application.Services.PromptGenerator>();
+
+// Register infrastructure services
+builder.Services.AddSingleton<CliServerService>();
+builder.Services.AddSingleton<SnmpAgentService>();
 
 var app = builder.Build();
 
