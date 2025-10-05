@@ -1,3 +1,8 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Yanets.Core.Interfaces;
 using Yanets.Core.Models;
 using Yanets.Core.Vendors;
@@ -5,51 +10,81 @@ using Yanets.Application.Services;
 using Yanets.WebUI.Services;
 using Yanets.SharedKernel;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+namespace Yanets.WebUI
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    public class Program
     {
-        Title = "YANETS - Yet Another Network Equipment Test Simulator",
-        Version = "v1",
-        Description = "A comprehensive network device simulation system with CLI and SNMP support"
-    });
-});
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-// Register YANETS services
-builder.Services.AddSingleton<Yanets.Application.Services.ITopologyService, Yanets.Application.Services.TopologyService>();
-builder.Services.AddSingleton<Yanets.Application.Services.IDeviceSimulator, Yanets.Application.Services.DeviceSimulatorService>();
-builder.Services.AddSingleton<Yanets.Core.Interfaces.ICommandParser, Yanets.Application.Services.CommandParser>();
-builder.Services.AddSingleton<Yanets.Core.Interfaces.IMibProvider, Yanets.Application.Services.MibProvider>();
-builder.Services.AddSingleton<Yanets.Core.Interfaces.IPromptGenerator, Yanets.Application.Services.PromptGenerator>();
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
 
-// Register infrastructure services
-builder.Services.AddSingleton<CliServerService>();
-builder.Services.AddSingleton<SnmpAgentService>();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    public class Startup
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "YANETS API v1");
-        c.RoutePrefix = string.Empty; // Serve Swagger UI at root
-    });
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "YANETS - Yet Another Network Equipment Test Simulator",
+                    Version = "v1",
+                    Description = "A comprehensive network device simulation system with CLI and SNMP support"
+                });
+            });
+
+            // Register YANETS services
+            services.AddSingleton<Yanets.Application.Services.ITopologyService, Yanets.Application.Services.TopologyService>();
+            services.AddSingleton<Yanets.Application.Services.IDeviceSimulator, Yanets.Application.Services.DeviceSimulatorService>();
+            services.AddSingleton<Yanets.Core.Interfaces.ICommandParser, Yanets.Application.Services.CommandParser>();
+            services.AddSingleton<Yanets.Core.Interfaces.IMibProvider, Yanets.Application.Services.MibProvider>();
+            services.AddSingleton<Yanets.Core.Interfaces.IPromptGenerator, Yanets.Application.Services.PromptGenerator>();
+
+            // Register infrastructure services
+            services.AddSingleton<CliServerService>();
+            services.AddSingleton<SnmpAgentService>();
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "YANETS API v1");
+                    c.RoutePrefix = string.Empty; // Serve Swagger UI at root
+                });
+            }
+
+            app.UseHttpsRedirection();
+            app.UseAuthorization();
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+
+                // Health check endpoint
+                endpoints.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Timestamp = DateTime.UtcNow }));
+            });
+        }
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-
-app.MapControllers();
-
-// Health check endpoint
-app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Timestamp = DateTime.UtcNow }));
-
-app.Run();
