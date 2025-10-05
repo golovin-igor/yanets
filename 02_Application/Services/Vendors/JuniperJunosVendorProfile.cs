@@ -165,30 +165,29 @@ login:
 
         private static string GenerateDefaultConfig(NetworkDevice device)
         {
-            return $@"## Last commit: {DateTime.Now}
-version 18.4R1.8;
-system {{
-    host-name {device.Hostname};
-    root-authentication {{
-        encrypted-password "$1$..."; ## SECRET-DATA
-    }}
-    services {{
-        ssh;
-        netconf {{
-            ssh;
-        }}
-    }}
-}}
-interfaces {{
-    ge-0/0/0 {{
-        unit 0 {{
-            family inet {{
-                address 192.168.1.1/24;
-            }}
-        }}
-    }}
-}}
-";
+            return $"## Last commit: {DateTime.Now}\n" +
+                   $"version 18.4R1.8;\n" +
+                   $"system {{\n" +
+                   $"    host-name {device.Hostname};\n" +
+                   $"    root-authentication {{\n" +
+                   $"        encrypted-password \"$1$...\"; ## SECRET-DATA\n" +
+                   $"    }}\n" +
+                   $"    services {{\n" +
+                   $"        ssh;\n" +
+                   $"        netconf {{\n" +
+                   $"            ssh;\n" +
+                   $"        }}\n" +
+                   $"    }}\n" +
+                   $"}}\n" +
+                   $"interfaces {{\n" +
+                   $"    ge-0/0/0 {{\n" +
+                   $"        unit 0 {{\n" +
+                   $"            family inet {{\n" +
+                   $"                address 192.168.1.1/24;\n" +
+                   $"            }}\n" +
+                   $"        }}\n" +
+                   $"    }}\n" +
+                   $"}}\n";
         }
     }
 }
