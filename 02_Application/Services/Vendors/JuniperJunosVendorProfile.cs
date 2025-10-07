@@ -132,8 +132,7 @@ JUNOS Software Release [18.4R1.8]
 
 {device.Hostname} (ttyu0)
 
-login:
-";
+login: ";
 
             return CommandResult.CreateSuccess(output);
         }
@@ -147,7 +146,7 @@ login:
             {
                 var admin = iface.IsUp ? "up" : "down";
                 var link = iface.IsUp ? "up" : "down";
-                var proto = iface.IsUp ? "inet" : "down";
+                var proto = "inet";
 
                 output.AppendLine(
                     $"{iface.Name,-23} " +
@@ -229,8 +228,6 @@ login:
 
             // Enter BGP configuration mode
             ctx.Session.CurrentMode = CliMode.RouterConfig;
-            ctx.Session.SessionVariables["bgp_as"] = asNumber;
-            ctx.Session.SessionVariables["routing_protocol"] = "bgp";
 
             var newState = ctx.State.Clone();
             return new CommandResult
@@ -239,6 +236,93 @@ login:
                 Output = string.Empty,
                 UpdatedState = newState
             };
+        }
+
+        private static CommandResult SetProtocolsOspfAreaHandler(CommandContext ctx)
+        {
+            var areaId = ctx.ParsedArguments.GetValueOrDefault("area-id");
+            var interfaceName = ctx.ParsedArguments.GetValueOrDefault("interface");
+
+            if (string.IsNullOrEmpty(areaId) || string.IsNullOrEmpty(interfaceName))
+            {
+                return CommandResult.CreateError("syntax error");
+            }
+
+            var newState = ctx.State.Clone();
+            return new CommandResult
+            {
+                Success = true,
+                Output = string.Empty,
+                UpdatedState = newState
+            };
+        }
+
+        private static CommandResult ShowBgpSummaryHandler(CommandContext ctx)
+        {
+            var output = @"Groups: 1 Peers: 1 Down peers: 0
+  Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
+  inet.0                 0          0          0          0          0          0
+  Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...
+";
+
+            return CommandResult.CreateSuccess(output);
+        }
+
+        private static CommandResult ShowOspfNeighborHandler(CommandContext ctx)
+        {
+            var output = @"Address          Interface              State     ID               Pri  Dead
+192.168.1.2      ge-0/0/0.0             Full      192.168.1.2      128    35
+";
+
+            return CommandResult.CreateSuccess(output);
+        }
+
+        private static CommandResult ShowRouteProtocolBgpHandler(CommandContext ctx)
+        {
+            var output = @"inet.0: 5 destinations, 5 routes (5 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+10.0.0.0/8         *[BGP/170] 00:00:05, localpref 100
+                      AS path: 65001 I, validation-state: unverified
+                    > to 192.168.1.2 via ge-0/0/0.0
+";
+
+            return CommandResult.CreateSuccess(output);
+        }
+
+        private static CommandResult SetStaticRouteHandler(CommandContext ctx)
+        {
+            var network = ctx.ParsedArguments.GetValueOrDefault("network");
+            var nextHop = ctx.ParsedArguments.GetValueOrDefault("next-hop");
+
+            if (string.IsNullOrEmpty(network) || string.IsNullOrEmpty(nextHop))
+            {
+                return CommandResult.CreateError("syntax error");
+            }
+
+            var newState = ctx.State.Clone();
+            return new CommandResult
+            {
+                Success = true,
+                Output = string.Empty,
+                UpdatedState = newState
+            };
+        }
+
+        private static CommandResult ShowRouteHandler(CommandContext ctx)
+        {
+            var output = @"inet.0: 5 destinations, 5 routes (5 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+0.0.0.0/0          *[Static/5] 00:00:10
+                    > to 192.168.1.1 via ge-0/0/0.0
+192.168.1.0/24     *[Direct/0] 00:00:10
+                    > via ge-0/0/0.0
+192.168.1.1/32     *[Local/0] 00:00:10
+                      Local via ge-0/0/0.0
+";
+
+            return CommandResult.CreateSuccess(output);
         }
 
         private static string GenerateDefaultConfig(NetworkDevice device)
@@ -266,25 +350,6 @@ login:
                    $"        }}\n" +
                    $"    }}\n" +
                    $"}}\n";
-        }
-
-        private static CommandResult SetProtocolsOspfAreaHandler(CommandContext ctx)
-        {
-            var areaId = ctx.ParsedArguments.GetValueOrDefault("area-id");
-            var interface = ctx.ParsedArguments.GetValueOrDefault("interface");
-
-            if (string.IsNullOrEmpty(areaId) || string.IsNullOrEmpty(interface))
-            {
-                return CommandResult.CreateError("syntax error");
-            }
-
-            var newState = ctx.State.Clone();
-            return new CommandResult
-            {
-                Success = true,
-                Output = string.Empty,
-                UpdatedState = newState
-            };
         }
     }
 }

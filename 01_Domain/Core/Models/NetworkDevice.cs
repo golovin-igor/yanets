@@ -251,17 +251,6 @@ namespace Yanets.Core.Models
         }
 
         /// <summary>
-        /// Initializes interface connectivity tracking for all interfaces
-        /// </summary>
-        private void InitializeInterfaceConnectivity()
-        {
-            foreach (var iface in Interfaces.Where(i => i.IsUp))
-            {
-                State.InterfaceConnectivity[iface.Name] = true;
-            }
-        }
-
-        /// <summary>
         /// Creates a deep clone of the device
         /// </summary>
         public NetworkDevice Clone()

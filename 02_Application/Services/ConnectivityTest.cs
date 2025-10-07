@@ -4,9 +4,20 @@ using Yanets.Core.Commands;
 using Yanets.Core.Models;
 using Yanets.Core.Vendors;
 using Yanets.Application.Services.Vendors;
+using Yanets.SharedKernel;
 
 namespace Yanets.Application.Services
 {
+    /// <summary>
+    /// Test implementation of NetworkDevice for testing purposes
+    /// </summary>
+    public class TestDevice : NetworkDevice
+    {
+        public TestDevice(DeviceType deviceType, string vendorName) : base(deviceType, vendorName) { }
+
+        public override bool IsValid() => true;
+    }
+
     /// <summary>
     /// Test class to demonstrate connectivity and routing functionality
     /// </summary>
@@ -44,7 +55,7 @@ namespace Yanets.Application.Services
             };
 
             // Create Router1
-            var router1 = new NetworkDevice(DeviceType.Router, "Cisco")
+            var router1 = new TestDevice(DeviceType.Router, "Cisco")
             {
                 Name = "Router1",
                 Hostname = "Router1"
@@ -67,7 +78,7 @@ namespace Yanets.Application.Services
             });
 
             // Create Router2
-            var router2 = new NetworkDevice(DeviceType.Router, "Cisco")
+            var router2 = new TestDevice(DeviceType.Router, "Cisco")
             {
                 Name = "Router2",
                 Hostname = "Router2"
