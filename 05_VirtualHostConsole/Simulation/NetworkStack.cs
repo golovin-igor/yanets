@@ -19,25 +19,6 @@ namespace Yanets.VirtualHostConsole.Simulation
             MacAddressTable = new MacAddressTable();
         }
 
-namespace Yanets.VirtualHostConsole.Simulation
-{
-    public class NetworkStack
-    {
-        public string HostId { get; }
-        public List<NetworkInterface> Interfaces { get; set; }
-        public RoutingTable RoutingTable { get; set; }
-        public ArpTable ArpTable { get; set; }
-        public MacAddressTable MacAddressTable { get; set; }
-
-        public NetworkStack(string hostId)
-        {
-            HostId = hostId ?? throw new ArgumentNullException(nameof(hostId));
-            Interfaces = new List<NetworkInterface>();
-            RoutingTable = new RoutingTable();
-            ArpTable = new ArpTable();
-            MacAddressTable = new MacAddressTable();
-        }
-
         public NetworkInterface GetInterfaceByName(string name)
         {
             return Interfaces.FirstOrDefault(i =>
