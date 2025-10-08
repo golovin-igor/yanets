@@ -71,6 +71,8 @@ namespace Yanets.VirtualHostConsole
             services.AddSingleton<ISubnetManager, SubnetManager>();
             services.AddSingleton<IConnectionRouter, ConnectionRouter>();
             services.AddSingleton<ISessionManager, SessionManager>();
+            services.AddSingleton<VendorProfileService>();
+            services.AddSingleton<NetworkStartupService>();
 
             // Register protocol handlers
             services.AddTransient<IProtocolHandler, TelnetProtocolHandler>();
