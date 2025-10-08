@@ -327,3 +327,84 @@ namespace Yanets.WebUI.Controllers
         public string FilePath { get; set; }
     }
 }
+
+// Additional endpoints to expose subnet usage and used IP addresses
+namespace Yanets.WebUI.Controllers
+{
+    public partial class VirtualNetworkController
+    {
+        /// <summary>
+        /// Get subnet usage details including the list of used IP addresses
+        /// </summary>
+        [HttpGet("subnets/usage")]
+        public ActionResult<SubnetUsageDto> GetSubnetUsage()
+        {
+            try
+            {
+                // Current implementation supports a single default subnet
+                var subnetCidr = "192.168.1.0/24";
+                var gateway = "192.168.1.1";
+                var totalAddresses = 254; // excluding network/broadcast
+
+                var hosts = _networkManager.GetAllHosts().ToList();
+                var usedIps = hosts
+                    .Select(h => h.IpAddress)
+                    .Where(ip => !string.IsNullOrWhiteSpace(ip))
+                    .OrderBy(ip => ip)
+                    .ToList();
+
+                var dto = new SubnetUsageDto
+                {
+                    Name = "default",
+                    Cidr = subnetCidr,
+                    Gateway = gateway,
+                    TotalAddresses = totalAddresses,
+                    UsedAddresses = usedIps.Count,
+                    AvailableAddresses = Math.Max(0, totalAddresses - usedIps.Count),
+                    UsedIps = usedIps
+                };
+
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get subnet usage details");
+                return StatusCode(500, new { error = "Failed to get subnet usage details" });
+            }
+        }
+
+        /// <summary>
+        /// Get only the list of used IP addresses in the simulated subnet
+        /// </summary>
+        [HttpGet("subnets/used-ips")]
+        public ActionResult<IEnumerable<string>> GetUsedIps()
+        {
+            try
+            {
+                var usedIps = _networkManager.GetAllHosts()
+                    .Select(h => h.IpAddress)
+                    .Where(ip => !string.IsNullOrWhiteSpace(ip))
+                    .OrderBy(ip => ip)
+                    .ToList();
+
+                return Ok(usedIps);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get used IP addresses");
+                return StatusCode(500, new { error = "Failed to get used IP addresses" });
+            }
+        }
+    }
+
+    public class SubnetUsageDto
+    {
+        public string Name { get; set; }
+        public string Cidr { get; set; }
+        public string Gateway { get; set; }
+        public int TotalAddresses { get; set; }
+        public int UsedAddresses { get; set; }
+        public int AvailableAddresses { get; set; }
+        public List<string> UsedIps { get; set; } = new();
+    }
+}

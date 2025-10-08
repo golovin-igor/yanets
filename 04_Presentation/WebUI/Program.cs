@@ -60,6 +60,12 @@ namespace Yanets.WebUI
             // Register infrastructure services
             services.AddSingleton<CliServerService>();
             services.AddSingleton<SnmpAgentService>();
+            // Register Virtual Network services
+            // Hosted service to auto-start the virtual network on app startup
+            services.AddHostedService<Yanets.WebUI.VirtualNetwork.VirtualNetworkHostedService>();
+            services.AddSingleton<Yanets.WebUI.VirtualNetwork.IVirtualNetworkManager, Yanets.WebUI.VirtualNetwork.VirtualNetworkManager>();
+            services.AddTransient<Yanets.WebUI.VirtualNetwork.IProtocolHandler, Yanets.WebUI.VirtualNetwork.ProtocolHandlers.TelnetProtocolHandler>();
+            services.AddTransient<Yanets.WebUI.VirtualNetwork.IProtocolHandler, Yanets.WebUI.VirtualNetwork.ProtocolHandlers.SnmpProtocolHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -69,6 +75,7 @@ namespace Yanets.WebUI
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
+            
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "YANETS API v1");
                     c.RoutePrefix = string.Empty; // Serve Swagger UI at root
                 });
@@ -76,6 +83,12 @@ namespace Yanets.WebUI
 
             app.UseHttpsRedirection();
 
+                // Redirect root to the Virtual Network dashboard
+                endpoints.MapGet("/", async context =>
+                {
+                    context.Response.Redirect("/virtual-network");
+                    await Task.CompletedTask;
+                });
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
